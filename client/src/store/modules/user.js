@@ -1,6 +1,12 @@
 import { login, logout, getInfo } from '@/api/user'
+import { MessageBox } from 'element-ui'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import axios from 'axios'
+axios.defaults.headers = {
+  'Content-Type': 'application/json'
+}
+const api_url = 'http://localhost:3010/'
 const state = {
   token: getToken(),
   name: '',
@@ -29,12 +35,26 @@ const mutations = {
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
+  async login({ commit }, userInfo) {
+    // return  new Promise((resolve, reject)=>{
+    //   axios.post(api_url+'user/login', userInfo)
+    //   .then((response)=>{
+    //     if(response.data.status === 200){
+    //       commit('SET_TOKEN', 'admin_token')
+    //       setToken('admin-token')
+    //       resolve()
+    //     }else{
+    //       MessageBox('ชื่อผู้ใช้งานหรือรหัสผ่านผิดพลาด', 'แจ้งเตือน', 'warning')
+    //       reject()
+    //     }
+    //   })
+    // })
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
+        console.log(data)
         setToken(data.token)
         resolve()
       }).catch(error => {

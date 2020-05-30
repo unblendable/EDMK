@@ -1,3 +1,4 @@
+
 const moment = require('moment')
 const userModel = require('../models/user.model')
 const bcrypt = require('bcrypt')
@@ -8,10 +9,11 @@ exports.login = async function(req, res){
     let result = await userModel.getUserByUsername(username)
     if(result.length){
         bcrypt.compare(password, result[0].password, (err, match)=>{
-            return err ? err : match
+            var status = match ? 200 : err ? 500 : 300
+            return jsonres(res, status, result)
         })
     }else{
-        return "username doesn't exists"
+        return jsonres(res, 300, 'Invalid username or password')
     }
 }
 
