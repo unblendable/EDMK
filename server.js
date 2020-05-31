@@ -33,14 +33,6 @@ app.use(bodyParser.raw())
 app.use(bodyParser.json({ limit: "100mb", parameterLimit: 1000000 }))
 app.use(bodyParser.urlencoded({ limit: "100mb",  extended: true, parameterLimit: 1000000 }))
 
-//HANDLE PRODUCTION
-if(process.env.NODE_ENV === 'production'){
-    // STATIC FOLDER
-    app.use(express.static(__dirname + '/public/'))
-
-    //handle SPA
-    app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html'))
-}
 const server = http.createServer(app)
 server.on('clientError', (err,socket) => {
     socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
@@ -68,5 +60,13 @@ server.listen(port, function(){
     console.log('opened server on', server.address());
 })
 
-
 require('./src/routes/index')(app)
+
+//HANDLE PRODUCTION
+if(process.env.NODE_ENV === 'production'){
+    // STATIC FOLDER
+    app.use(express.static(__dirname + '/public/'))
+
+    //handle SPA
+    app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html'))
+}
