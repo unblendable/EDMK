@@ -6,7 +6,7 @@ import axios from 'axios'
 axios.defaults.headers = {
   'Content-Type': 'application/json'
 }
-const api_url = 'http://localhost:3010/'
+// const api_url = 'http://localhost:3010/'
 const state = {
   token: getToken(),
   name: '',

@@ -4,16 +4,16 @@ const jwt = require('jsonwebtoken')
 const http = require('http')
 const bodyParser = require('body-parser')
 const port = process.env.PORT || 3010
-const db = mysql.createConnection({
-    host : 'localhost',
-    user : 'root',
-    password : '',
-    database : 'edmk'
-})
+// const db = mysql.createConnection({
+//     host : 'localhost',
+//     user : 'root',
+//     password : '',
+//     database : 'edmk'
+// })
 
-db.connect((err)=>{
-    if(err) throw err
-})
+// db.connect((err)=>{
+//     if(err) throw err
+// })
 const app = express()
 app.use(function(req, res, next) {
     // req.setTimeout(0) // no timeout
@@ -33,6 +33,14 @@ app.use(bodyParser.raw())
 app.use(bodyParser.json({ limit: "100mb", parameterLimit: 1000000 }))
 app.use(bodyParser.urlencoded({ limit: "100mb",  extended: true, parameterLimit: 1000000 }))
 
+//HANDLE PRODUCTION
+if(process.env.NODE_ENV === 'production'){
+    // STATIC FOLDER
+    app.use(express.static(__dirname + '/public/'))
+
+    //handle SPA
+    app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html'))
+}
 const server = http.createServer(app)
 server.on('clientError', (err,socket) => {
     socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
@@ -47,7 +55,7 @@ server.on('error', (e)=>{
     }
 })
 server.listen(port, function(){
-    global.sql = db
+    // global.sql = db
     global.jsonres = function(res, status ,data, message){
         res.set('Content-type', 'application/json')
         res.status(200).send({
