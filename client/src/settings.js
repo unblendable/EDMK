@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'Vue Element Admin',
+  title: 'Dhammamongkol buddhist school',
 
   /**
    * @type {boolean} true | false
