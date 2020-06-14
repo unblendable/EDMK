@@ -1,18 +1,21 @@
 import { login, logout, getInfo } from '@/api/user'
 import { MessageBox } from 'element-ui'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import moment from 'moment'
 import router, { resetRouter } from '@/router'
 import axios from 'axios'
 axios.defaults.headers = {
   'Content-Type': 'application/json'
 }
-const api_url = 'http://localhost:3010/'
 const state = {
   token: getToken(),
   name: '',
   avatar: '',
   introduction: '',
-  roles: []
+  roles: [],
+  user_type_options: [],
+  title_name_options: [],
+  data_table: []
 }
 
 const mutations = {
@@ -30,6 +33,21 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_USER_TYPE_OPTIONS: (state, items) => {
+    state.user_type_options = items
+  },
+  SET_TITLE_NAME_OPTIONS: (state, items) => {
+    state.title_name_options = items
+  },
+  SET_DATA_TABLE(state, items) {
+    state.data_table = items
+  },
+  REMOVE_ROW(state, index) {
+    state.data_table.splice(index, 1)
+  },
+  ADD_USER_TO_TABLE(state, item) {
+    state.data_table.unshift(item)
   }
 }
 
@@ -37,7 +55,7 @@ const actions = {
   // user login
   async login({ commit }, userInfo) {
     // return  new Promise((resolve, reject)=>{
-    //   axios.post(api_url+'user/login', userInfo)
+    //   axios.post(SERV_API+'user/login', userInfo)
     //   .then((response)=>{
     //     if(response.data.status === 200){
     //       commit('SET_TOKEN', 'admin_token')
@@ -54,7 +72,6 @@ const actions = {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
-        console.log(data)
         setToken(data.token)
         resolve()
       }).catch(error => {
@@ -144,6 +161,77 @@ const actions = {
 
       resolve()
     })
+  },
+
+  getUserMemberList({ commit }) {
+    return new Promise(async resolve => {
+      axios.post(SERV_API + 'user/getUserMemberList')
+        .then((res) => {
+          if (res.data.status === 200) {
+            console.log(res.data.data)
+            commit('SET_DATA_TABLE', res.data.data)
+            resolve()
+          } else {
+            MessageBox('ไม่พบรายชื่อผู้ใช้งาน', 'แจ้งเตือน', 'warning')
+            reject()
+          }
+        })
+    })
+  },
+
+  getUserType({ commit }) {
+    return new Promise(async resolve => {
+      axios.get(SERV_API + 'user/getUserTypeList')
+        .then((res) => {
+          if (res.data.status === 200) {
+            commit('SET_USER_TYPE_OPTIONS', res.data.data)
+            resolve()
+          } else {
+            MessageBox('เกิดข้อผิดพลาด [GET USER TYPE]', 'แจ้งเตือน', 'warning')
+            reject()
+          }
+        })
+    })
+  },
+
+  getTitleNameList({ commit }) {
+    return new Promise(async resolve => {
+      axios.get(SERV_API + 'user/getTitleNameList')
+        .then((res) => {
+          if (res.data.status === 200) {
+            commit('SET_TITLE_NAME_OPTIONS', res.data.data)
+            resolve()
+          } else {
+            MessageBox('เกิดข้อผิดพลาด [GET TITLE NAME]', 'แจ้งเตือน', 'warning')
+            reject()
+          }
+        })
+    })
+  },
+
+  createUser({ commit }, formdata) {
+    axios.post(SERV_API + 'user/register', formdata)
+      .then(res => {
+        if (res.data.status === 200) {
+          formdata.created_at = moment().format('DD/MM/YYYY')
+          commit('ADD_USER_TO_TABLE', formdata)
+          MessageBox('เพิ่มข้อมูลสำเร็จ', 'แจ้งเตือน', 'success')
+        } else {
+          MessageBox('เกิดข้อผิดพลาด', 'แจ้งเตือน', 'warning')
+        }
+      })
+  },
+
+  removeUser({ commit }, row_data) {
+    axios.post(SERV_API + 'user/deleteUserMember', row_data)
+      .then(res => {
+        if (res.data.status === 200) {
+          commit('REMOVE_ROW', row_data.index)
+          MessageBox('ลบข้อมูลสำเร็จ', 'แจ้งเตือน', 'success')
+        } else {
+          MessageBox('เกิดข้อผิดพลาด', 'แจ้งเตือน', 'warning')
+        }
+      })
   }
 }
 
