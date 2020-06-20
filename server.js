@@ -3,7 +3,6 @@ const mysql = require('mysql')
 const jwt = require('jsonwebtoken')
 const http = require('http')
 const bodyParser = require('body-parser')
-const port = process.env.PORT || 3010
 
 const db = mysql.createConnection({
     host : 'us-cdbr-east-05.cleardb.net',
@@ -36,6 +35,11 @@ app.use(bodyParser.raw())
 app.use(bodyParser.json({ limit: "100mb", parameterLimit: 1000000 }))
 app.use(bodyParser.urlencoded({ limit: "100mb",  extended: true, parameterLimit: 1000000 }))
 
+if(process.env.NODE_ENV === 'production'){
+    app.use(express.static(__dirname + '/public/'))
+    app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html'))
+}
+const port = process.env.PORT || 3010
 const server = http.createServer(app)
 server.on('clientError', (err,socket) => {
     socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
@@ -51,25 +55,6 @@ server.on('error', (e)=>{
 })
 server.listen(port, function(){
     global.sql = db
-    // var sqtext = `SELECT table_schema AS "Database", SUM(data_length + index_length) / 1024 / 1024 AS "Size (MB)" FROM information_schema.TABLES GROUP BY table_schema `
-    // var sqtext = `ALTER TABLE user_member CHANGE 'id' 'user_id' INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY`
-    // var sqtext = `CREATE TABLE user_detail (
-    //                 user_detail_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    //                 user_member_id INT(6) UNSIGNED UNIQUE NOT NULL,
-    //                 title_id INT(6) UNSIGNED,
-    //                 firstname VARCHAR(50) NOT NULL,
-    //                 lastname VARCHAR(50) NOT NULL,
-    //                 email VARCHAR(50),
-    //                 tel VARCHAR(12),
-    //                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    //                 )`
-    // var sqtext = `DESCRIBE user_type`
-
-    // sql.query(sqtext, function(err, result){
-    //     if(err) throw err
-    //     console.log(result)
-    // })
-
     global.jsonres = function(res, status ,data, message){
         res.set('Content-type', 'application/json')
         res.status(200).send({
