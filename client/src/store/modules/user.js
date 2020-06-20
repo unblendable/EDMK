@@ -52,8 +52,13 @@ const mutations = {
 const actions = {
   // user login
   async login({ commit }, userInfo) {
+    console.log('store login => ', userInfo)
+    if (!(userInfo.username && userInfo.password)) {
+      return MessageBox('ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง', 'แจ้งเตือน', 'warning')
+    }
     return new Promise(async(resolve, reject) => {
       const result = await toolbox.post_api('user/login', userInfo)
+      console.log('result => ', result)
       if (result.status === 200) {
         commit('SET_TOKEN', 'admin-token')
         setToken('admin-token')

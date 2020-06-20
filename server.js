@@ -1,21 +1,29 @@
 const express = require('express')
 const mysql = require('mysql')
+// const pool = require('generic-pool')
 const jwt = require('jsonwebtoken')
 const http = require('http')
 const bodyParser = require('body-parser')
+// const db = mysql.createConnection({
+//     host : 'us-cdbr-east-05.cleardb.net',
+//     user : 'b2b3c96ab60eb5',
+//     password : '2ba913b8',
+//     database : 'heroku_5a5fbfc4d0690fb',
+//     multipleStatements :  true
+// })
 
-const db = mysql.createConnection({
+
+// db.connect((err)=>{
+//     if(err) throw err
+//     console.log('connected to database')
+// })
+
+const pool = mysql.createPool({
     host : 'us-cdbr-east-05.cleardb.net',
     user : 'b2b3c96ab60eb5',
     password : '2ba913b8',
     database : 'heroku_5a5fbfc4d0690fb',
     multipleStatements :  true
-})
-
-
-db.connect((err)=>{
-    if(err) throw err
-    console.log('connected to database')
 })
 const app = express()
 app.use(function(req, res, next) {
@@ -55,12 +63,24 @@ server.on('error', (e)=>{
     }
 })
 server.listen(port, function(){
-    global.sql = db
-    // var sqtext = `SELECT * FROM user_member`
-    // sql.query(sqtext, function(err, result){
-    //     if(err) throw err
-    //     console.log(result)
-    // })
+    global.sql_query = function(sqtxt, binding){
+        return new Promise((resolve)=>{
+            pool.query(sqtxt, binding, function(err, result){
+                if(err) throw err
+                resolve(result)
+            })
+            // pool.getConnection(function(err, connection) {
+            //     if (err) throw err;
+            //     console.log(connection.state)
+            //     connection.query(sqtxt, binding,  function (error, result) {
+            //         resolve(result)
+            //         connection.release();
+            //         if (error) throw error;
+            //     });
+            // });
+        })
+    }
+
     global.jsonres = function(res, status ,data, message){
         res.set('Content-type', 'application/json')
         res.status(200).send({

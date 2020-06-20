@@ -1,11 +1,8 @@
 exports.getUserByUsername = function(username){
     return new Promise((resolve)=>{
-        var sqtext = ` SELECT * FROM user_member WHERE username = ? `
-        var binding = [username]
-        sql.query(sqtext, binding, function(err, result){
-            if(err) throw err
-            resolve(result)
-        })
+    var sqtext = ` SELECT * FROM user_member WHERE username = ? `
+    var binding = [username]
+    sql_query(sqtext,binding).then((result) => {resolve(result)})
     })
 }
 
@@ -42,33 +39,26 @@ exports.deleteUserMember = function(user_member_id){
 }
 
 exports.getUserMemberList = function(start, limit){
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve)=>{
         var sqtext = `SELECT * FROM user_member 
                         INNER JOIN user_detail ON user_detail.user_member_id = user_member.id
                         INNER JOIN title_name USING(title_id)
                         INNER JOIN user_type USING(user_type_id) `
         if(start && start >= 0 && limit && limit > 0) sqtext += ` LIMIT ${start},${limit} `
-        sql.query(sqtext, function(err, result){
-            if(err) reject(err)
-            resolve(result)
-        })
+        sql_query(sqtext).then((result) => {resolve(result)})
     })
 }
 
 exports.getUserTypeList = function(){
     return new Promise((resolve)=>{
-        sql.query(`SELECT * FROM user_type`, function(err, result){
-            if(err) throw err
-            resolve(result)
-        })
+        var sqtext = 'SELECT * FROM user_type'
+        sql_query(sqtext).then((result) => {resolve(result)})
     })
 }
 
 exports.getTitleNameList = function(){
     return new Promise((resolve)=>{
-        sql.query(`SELECT * FROM title_name`, function(err, result){
-            if(err) throw err
-            resolve(result)
-        })
+        var sqtext = 'SELECT * FROM title_name'
+        sql_query(sqtext).then((result) => {resolve(result)})
     })
 }
