@@ -29,7 +29,7 @@ exports.addUserMember = function(username, password, token, type_id, title_id, f
 
 exports.deleteUserMember = function(user_member_id){
     return new Promise((resolve, reject)=>{
-        var sqtext = ` START TRANSACTIONS;
+        var sqtext = ` START TRANSACTION;
                         DELETE FROM user_member WHERE id = ? ;
                         DELETE FROM user_detail WHERE user_member_id = ? ;
                         COMMIT; `

@@ -7,7 +7,6 @@ const randomstring = require('randomstring')
 exports.login = async function(req, res){
     var username = req.body.username
     var password = req.body.password
-    console.log(req.body)
     let result = await userModel.getUserByUsername(username)
     if(result.length){
         bcrypt.compare(password, result[0].password, (err, match)=>{

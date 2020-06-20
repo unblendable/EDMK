@@ -8,7 +8,8 @@ const db = mysql.createConnection({
     host : 'us-cdbr-east-05.cleardb.net',
     user : 'b2b3c96ab60eb5',
     password : '2ba913b8',
-    database : 'heroku_5a5fbfc4d0690fb'
+    database : 'heroku_5a5fbfc4d0690fb',
+    multipleStatements :  true
 })
 
 
@@ -55,6 +56,11 @@ server.on('error', (e)=>{
 })
 server.listen(port, function(){
     global.sql = db
+    // var sqtext = `SELECT * FROM user_member`
+    // sql.query(sqtext, function(err, result){
+    //     if(err) throw err
+    //     console.log(result)
+    // })
     global.jsonres = function(res, status ,data, message){
         res.set('Content-type', 'application/json')
         res.status(200).send({

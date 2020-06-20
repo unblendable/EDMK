@@ -1,12 +1,10 @@
 import { login, logout, getInfo } from '@/api/user'
 import { MessageBox } from 'element-ui'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import * as toolbox from '@/utils/toolbox'
 import moment from 'moment'
 import router, { resetRouter } from '@/router'
-import axios from 'axios'
-axios.defaults.headers = {
-  'Content-Type': 'application/json'
-}
+
 const state = {
   token: getToken(),
   name: '',
@@ -54,29 +52,21 @@ const mutations = {
 const actions = {
   // user login
   async login({ commit }, userInfo) {
-    // return  new Promise((resolve, reject)=>{
-    //   axios.post(SERV_API+'user/login', userInfo)
-    //   .then((response)=>{
-    //     if(response.data.status === 200){
-    //       commit('SET_TOKEN', 'admin_token')
-    //       setToken('admin-token')
-    //       resolve()
-    //     }else{
-    //       MessageBox('ชื่อผู้ใช้งานหรือรหัสผ่านผิดพลาด', 'แจ้งเตือน', 'warning')
-    //       reject()
-    //     }
-    //   })
-    // })
-    const { username, password } = userInfo
-    return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
+    return new Promise(async(resolve, reject) => {
+      const result = await toolbox.post_api('user/login', userInfo)
+      if (result.status === 200) {
+        login({ username: 'admin', password: '111111' }).then(response => {
+          const { data } = response
+          commit('SET_TOKEN', data.token)
+          setToken(data.token)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      } else {
+        MessageBox('ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง', 'แจ้งเตือน', 'warning')
+        reject()
+      }
     })
   },
 
@@ -163,75 +153,52 @@ const actions = {
     })
   },
 
-  getUserMemberList({ commit }) {
-    return new Promise(async resolve => {
-      axios.post(SERV_API + 'user/getUserMemberList')
-        .then((res) => {
-          if (res.data.status === 200) {
-            console.log(res.data.data)
-            commit('SET_DATA_TABLE', res.data.data)
-            resolve()
-          } else {
-            MessageBox('ไม่พบรายชื่อผู้ใช้งาน', 'แจ้งเตือน', 'warning')
-            reject()
-          }
-        })
-    })
+  async getUserMemberList({ commit }) {
+    const result = await toolbox.post_api('user/getUserMemberList')
+    if (result.status === 200) {
+      commit('SET_DATA_TABLE', result.data)
+    } else {
+      MessageBox('เกิดข้อผิดพลาด [GET USER MEMBER]', 'แจ้งเตือน', 'warning')
+    }
   },
 
-  getUserType({ commit }) {
-    return new Promise(async resolve => {
-      axios.post(SERV_API + 'user/getUserTypeList')
-        .then((res) => {
-          if (res.data.status === 200) {
-            commit('SET_USER_TYPE_OPTIONS', res.data.data)
-            resolve()
-          } else {
-            MessageBox('เกิดข้อผิดพลาด [GET USER TYPE]', 'แจ้งเตือน', 'warning')
-            reject()
-          }
-        })
-    })
+  async getUserType({ commit }) {
+    const result = await toolbox.post_api('user/getUserTypeList')
+    if (result.status === 200) {
+      commit('SET_USER_TYPE_OPTIONS', result.data)
+    } else {
+      MessageBox('เกิดข้อผิดพลาด [GET USER TYPE]', 'แจ้งเตือน', 'warning')
+    }
   },
 
-  getTitleNameList({ commit }) {
-    return new Promise(async resolve => {
-      axios.post(SERV_API + 'user/getTitleNameList')
-        .then((res) => {
-          if (res.data.status === 200) {
-            commit('SET_TITLE_NAME_OPTIONS', res.data.data)
-            resolve()
-          } else {
-            MessageBox('เกิดข้อผิดพลาด [GET TITLE NAME]', 'แจ้งเตือน', 'warning')
-            reject()
-          }
-        })
-    })
+  async getTitleNameList({ commit }) {
+    const result = await toolbox.post_api('user/getTitleNameList')
+    if (result.status === 200) {
+      commit('SET_TITLE_NAME_OPTIONS', result.data)
+    } else {
+      MessageBox('เกิดข้อผิดพลาด [GET TITLE NAME]', 'แจ้งเตือน', 'warning')
+    }
   },
 
-  createUser({ commit }, formdata) {
-    axios.post(SERV_API + 'user/register', formdata)
-      .then(res => {
-        if (res.data.status === 200) {
-          formdata.created_at = moment().format('DD/MM/YYYY')
-          commit('ADD_USER_TO_TABLE', formdata)
-          MessageBox('เพิ่มข้อมูลสำเร็จ', 'แจ้งเตือน', 'success')
-        } else {
-          MessageBox('เกิดข้อผิดพลาด', 'แจ้งเตือน', 'warning')
-        }
-      })
+  async createUser({ commit }, formdata) {
+    const result = await toolbox.post_api('user/register', formdata)
+    if (result.status === 200) {
+      formdata.created_at = moment().format('DD/MM/YYYY')
+      commit('ADD_USER_TO_TABLE', formdata)
+      MessageBox('เพิ่มข้อมูลสำเร็จ', 'แจ้งเตือน', 'success')
+    } else {
+      MessageBox('เกิดข้อผิดพลาด', 'แจ้งเตือน', 'warning')
+    }
   },
 
-  removeUser({ commit }, row_data) {
-    axios.post(SERV_API + 'user/deleteUserMember', row_data)
-      .then(res => {
-        if (res.data.status === 200) {
-          commit('REMOVE_ROW', row_data.index)
-          MessageBox('ลบข้อมูลสำเร็จ', 'แจ้งเตือน', 'success')
-        } else {
-          MessageBox('เกิดข้อผิดพลาด', 'แจ้งเตือน', 'warning')
-        }
-      })
+  async removeUser({ commit }, row_data) {
+    const result = await toolbox.post_api('user/deleteUserMember', row_data)
+    if (result.status === 200) {
+      commit('REMOVE_ROW', row_data.index)
+      MessageBox('ลบข้อมูลสำเร็จ', 'แจ้งเตือน', 'success')
+    } else {
+      MessageBox('เกิดข้อผิดพลาด', 'แจ้งเตือน', 'warning')
+    }
   }
 }
 

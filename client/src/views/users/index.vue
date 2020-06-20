@@ -340,7 +340,10 @@ export default {
       })
     },
     handleDelete(row, index) {
-      this.removeUser({ 'user_member_id': row.user_member_id, 'index': index })
+      this.$confirm('ลบผู้ใช้งาน', 'แจ้งเตือน', 'danger')
+        .then(() => {
+          this.removeUser({ 'user_member_id': row.user_member_id, 'index': index })
+        }).catch(() => {})
       // this.$notify({
       //   title: 'Success',
       //   message: 'ลบข้อมูลสำเร็จ',
