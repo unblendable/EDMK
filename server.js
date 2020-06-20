@@ -45,7 +45,7 @@ app.use(bodyParser.json({ limit: "100mb", parameterLimit: 1000000 }))
 app.use(bodyParser.urlencoded({ limit: "100mb",  extended: true, parameterLimit: 1000000 }))
 
 if(process.env.NODE_ENV === 'production'){
-    app.use(express.static(__dirname + '/public/'))
+    app.use(express.static(__dirname + '/public'))
     app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html'))
 }
 const port = process.env.PORT || 3010
