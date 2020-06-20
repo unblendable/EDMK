@@ -55,14 +55,9 @@ const actions = {
     return new Promise(async(resolve, reject) => {
       const result = await toolbox.post_api('user/login', userInfo)
       if (result.status === 200) {
-        login({ username: 'admin', password: '111111' }).then(response => {
-          const { data } = response
-          commit('SET_TOKEN', data.token)
-          setToken(data.token)
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
+        commit('SET_TOKEN', 'admin-token')
+        setToken('admin-token')
+        resolve()
       } else {
         MessageBox('ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง', 'แจ้งเตือน', 'warning')
         reject()
