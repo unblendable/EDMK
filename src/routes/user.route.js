@@ -4,7 +4,7 @@ router
     .post('/login', userController.login)
     .post('/register', userController.register)
     .post('/getUserMemberList', userController.getUserMemberList)
-    .get('/getUserTypeList', userController.getUserTypeList)
-    .get('/getTitleNameList', userController.getTitleNameList)
+    .post('/getUserTypeList', userController.getUserTypeList)
+    .post('/getTitleNameList', userController.getTitleNameList)
     .post('/deleteUserMember', userController.deleteUserMember)
 module.exports = router

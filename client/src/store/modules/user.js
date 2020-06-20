@@ -181,7 +181,7 @@ const actions = {
 
   getUserType({ commit }) {
     return new Promise(async resolve => {
-      axios.get(SERV_API + 'user/getUserTypeList')
+      axios.post(SERV_API + 'user/getUserTypeList')
         .then((res) => {
           if (res.data.status === 200) {
             commit('SET_USER_TYPE_OPTIONS', res.data.data)
@@ -196,7 +196,7 @@ const actions = {
 
   getTitleNameList({ commit }) {
     return new Promise(async resolve => {
-      axios.get(SERV_API + 'user/getTitleNameList')
+      axios.post(SERV_API + 'user/getTitleNameList')
         .then((res) => {
           if (res.data.status === 200) {
             commit('SET_TITLE_NAME_OPTIONS', res.data.data)
