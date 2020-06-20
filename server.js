@@ -80,7 +80,10 @@ server.listen(port, function(){
             // });
         })
     }
-
+    // sql_query('SELECT * FROM user_detail')
+    // .then((result)=>{
+    //     console.log(result)
+    // })
     global.jsonres = function(res, status ,data, message){
         res.set('Content-type', 'application/json')
         res.status(200).send({

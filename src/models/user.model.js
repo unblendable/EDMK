@@ -10,14 +10,12 @@ exports.addUserMember = function(username, password, token, type_id, title_id, f
     return new Promise((resolve, reject)=>{
         var sqtext = `INSERT INTO user_member(username, password, token, user_type_id) VALUES(?,?,?,?)`
         var binding = [username, password, token, type_id]
-        sql.query(sqtext, binding, function(err, result){
-            if(err) reject(err)
+        sql_query(sqtext, binding).then((result)=>{
             var user_member_id = result.insertId
             sqtext = `INSERT INTO user_detail(user_member_id, title_id, firstname, lastname, email, tel)
                         VALUES(?,?,?,?,?,?) `
             binding = [user_member_id, title_id, firstname, lastname, email, tel]
-            sql.query(sqtext, binding, function(err, result){
-                if(err) reject(err)
+            sql_query(sqtext, binding).then((result)=>{
                 resolve(result)
             })
         })
