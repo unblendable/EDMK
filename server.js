@@ -1,23 +1,8 @@
 const express = require('express')
 const mysql = require('mysql')
-// const pool = require('generic-pool')
 const jwt = require('jsonwebtoken')
 const http = require('http')
 const bodyParser = require('body-parser')
-// const db = mysql.createConnection({
-//     host : 'us-cdbr-east-05.cleardb.net',
-//     user : 'b2b3c96ab60eb5',
-//     password : '2ba913b8',
-//     database : 'heroku_5a5fbfc4d0690fb',
-//     multipleStatements :  true
-// })
-
-
-// db.connect((err)=>{
-//     if(err) throw err
-//     console.log('connected to database')
-// })
-
 const pool = mysql.createPool({
     host : 'us-cdbr-east-05.cleardb.net',
     user : 'b2b3c96ab60eb5',
