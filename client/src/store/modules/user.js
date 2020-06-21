@@ -71,18 +71,6 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      // const data = {
-      //   roles: ['admin'],
-      //   name: 'Super Admin',
-      //   avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-      //   introduction: 'May the force be with you'
-      // }
-      // const { roles, name, avatar, introduction } = data
-      // commit('SET_ROLES', roles)
-      // commit('SET_NAME', name)
-      // commit('SET_AVATAR', avatar)
-      // commit('SET_INTRODUCTION', introduction)
-      // resolve(data)
       getInfo(state.token).then(response => {
         const { data } = response
         if (!data) {
@@ -101,6 +89,18 @@ const actions = {
         commit('SET_INTRODUCTION', introduction)
         resolve(data)
       }).catch(error => {
+      // const data = {
+      //   roles: ['admin'],
+      //   name: 'Super Admin',
+      //   avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+      //   introduction: 'May the force be with you'
+      // }
+      // const { roles, name, avatar, introduction } = data
+      // commit('SET_ROLES', roles)
+      // commit('SET_NAME', name)
+      // commit('SET_AVATAR', avatar)
+      // commit('SET_INTRODUCTION', introduction)
+      // resolve(data)
         reject(error)
       })
     })
